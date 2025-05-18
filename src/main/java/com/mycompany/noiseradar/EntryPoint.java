@@ -9,8 +9,9 @@ import java.util.*;
 import org.json.*;
 
 public class EntryPoint {
-
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new ConstructionMap().setVisible(true));
+       SwingUtilities.invokeLater(() -> new ConstructionMap().setVisible(true));
+       Main main = new Main();
     }
+    
 }
