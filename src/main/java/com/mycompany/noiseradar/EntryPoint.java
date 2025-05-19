@@ -10,8 +10,8 @@ import org.json.*;
 
 public class EntryPoint {
     public static void main(String[] args) {
-       SwingUtilities.invokeLater(() -> new ConstructionMap().setVisible(true));
-       Main main = new Main();
+        SwingUtilities.invokeLater(() -> {
+            new ConstructionMapViewer("부산");
+        });
     }
-    
 }
