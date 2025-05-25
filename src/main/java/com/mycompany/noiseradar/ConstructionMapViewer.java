@@ -16,7 +16,7 @@ public class ConstructionMapViewer extends JFrame {
         this.location = location;
 
         // 지도 이미지 다운로드 및 JLabel 생성
-        googleAPI.downloadMap(location);
+        googleAPI.downloadMap(location, 11);
         mapLabel = new JLabel(googleAPI.getMap(location));
         googleAPI.fileDelete(location);
 
