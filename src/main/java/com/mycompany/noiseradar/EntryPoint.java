@@ -11,8 +11,6 @@ import org.json.*;
 public class EntryPoint {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            new ConstructionMapViewer("부산");
-            
             Main main = new Main();
         }); 
     }

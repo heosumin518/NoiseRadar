@@ -23,7 +23,6 @@ public class Main extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
         setTitle("Google Maps");
-        setVisible(true);
 
         panel.add(textField);
         panel.add(button);
@@ -62,7 +61,7 @@ public class Main extends JFrame {
 
         add(BorderLayout.SOUTH, googleMap);
 
-        // 여기서 줌 이벤트 유지!
+        // 줌 이벤트 유지
         googleMap.addMouseWheelListener(e -> {
             int notches = e.getWheelRotation();
             if (notches < 0) {
@@ -77,6 +76,12 @@ public class Main extends JFrame {
         });
 
         pack();
+
+        // 검색창은 빈 상태 유지
+        // 대신 초기 지도는 부산으로 띄우기
+        setMap("Busan");
+
+        setVisible(true);
     }
 
     private void repositionButton() {
