@@ -4,8 +4,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.net.URL;
 
 public class ConstructionMapViewer extends JFrame {
+
     private GoogleAPI googleAPI = new GoogleAPI();
     private String location;
     private JLabel mapLabel;
@@ -16,7 +18,7 @@ public class ConstructionMapViewer extends JFrame {
         this.location = location;
 
         // 지도 이미지 다운로드 및 JLabel 생성
-        googleAPI.downloadMap(location, 11);
+        googleAPI.downloadMap(location);
         mapLabel = new JLabel(googleAPI.getMap(location));
         googleAPI.fileDelete(location);
 
@@ -24,13 +26,28 @@ public class ConstructionMapViewer extends JFrame {
         constructionMap = new ConstructionMap();
         constructionMap.setVisible(false);
 
-        // 꼬깔콘 이미지 버튼 생성
-        ImageIcon coneIcon = new ImageIcon("E:/NoiseRadar/src/main/java/com/mycompany/cone_button.png");
-        coneButton = new JButton(coneIcon);
+        // cone_button.png 리소스 상대 경로로 로드 (클래스패스 기준)
+        URL coneImageUrl = getClass().getResource("/cone_button.png");
+        ImageIcon coneIcon = null;
+
+        if (coneImageUrl != null) {
+            coneIcon = new ImageIcon(coneImageUrl);
+            coneButton = new JButton(coneIcon);
+        } else {
+            System.err.println("⚠️ cone_button.png 리소스를 찾을 수 없습니다.");
+            coneButton = new JButton("🔴"); // 대체 버튼
+        }
+
+        // 버튼 꾸미기
         coneButton.setContentAreaFilled(false);
         coneButton.setBorderPainted(false);
         coneButton.setFocusPainted(false);
-        coneButton.setSize(coneIcon.getIconWidth(), coneIcon.getIconHeight());
+
+        if (coneIcon != null) {
+            coneButton.setSize(coneIcon.getIconWidth(), coneIcon.getIconHeight());
+        } else {
+            coneButton.setSize(40, 40); // 대체 크기
+        }
 
         // 버튼 클릭 시 공사 위치 표시/숨기기
         coneButton.addActionListener(e -> {
