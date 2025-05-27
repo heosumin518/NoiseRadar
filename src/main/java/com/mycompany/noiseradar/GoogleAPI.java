@@ -17,14 +17,17 @@ import javax.swing.ImageIcon;
  * @author heosumin518
  */
 public class GoogleAPI {
-    public void downloadMap(String location) {
+    public void downloadMap(String location, int zoom) {
         try {
             String imageURL = "https://maps.googleapis.com/maps/api/staticmap?center="
                     + URLEncoder.encode(location, "UTF-8")
-                    + "&key=AIzaSyB62YTIt4eKHYlVrf9mjioCksFADR_9CQg&zoom=11&size=612x612&scale=2";
+                    + "&key=AIzaSyB62YTIt4eKHYlVrf9mjioCksFADR_9CQg"
+                    + "&zoom=" + zoom + "&size=800x450&scale=2";
+            
             URL url = new URL(imageURL);
             InputStream is = url.openStream();
             OutputStream os = new FileOutputStream(location);
+            
             byte[] b = new byte[2048];
             int length;
             while ((length = is.read(b)) != -1) {
@@ -37,7 +40,14 @@ public class GoogleAPI {
         }
     }
     public ImageIcon getMap(String location) {
-        return new ImageIcon((new ImageIcon(location)).getImage().getScaledInstance(612, 612, java.awt.Image.SCALE_SMOOTH));
+        ImageIcon icon = new ImageIcon(location);
+        int w = icon.getIconWidth();
+        int h = icon.getIconHeight();
+        
+        int newW = 1600;
+        int newH = (int) ((double) h / w * newW);
+        
+        return new ImageIcon(icon.getImage().getScaledInstance(newW, newH, java.awt.Image.SCALE_SMOOTH));
     }
     
     public void fileDelete(String fileName) {
