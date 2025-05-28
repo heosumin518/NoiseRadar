@@ -3,7 +3,6 @@ package com.mycompany.noiseradar;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.net.URL;
 
 public class Main extends JFrame {
     private JTextField textField = new JTextField(30);
@@ -36,8 +35,8 @@ public class Main extends JFrame {
         constructionMap.setVisible(false);
         constructionMap.setBounds(0, 0, 612, 612);
 
-        URL iconURL = getClass().getResource("/cone_button.png");
-        ImageIcon coneIcon = new ImageIcon(iconURL);
+        // 🟡 로컬 상대 경로로 이미지 불러오기
+        ImageIcon coneIcon = new ImageIcon("src/main/java/com/mycompany/noiseradar/cone_button.png");
         coneButton = new JButton(coneIcon);
         coneButton.setContentAreaFilled(false);
         coneButton.setBorderPainted(false);
@@ -77,8 +76,7 @@ public class Main extends JFrame {
 
         pack();
 
-        // 검색창은 빈 상태 유지
-        // 대신 초기 지도는 부산으로 띄우기
+        // 초기 지도는 부산으로 띄우기
         setMap("Busan");
 
         setVisible(true);
@@ -96,12 +94,9 @@ public class Main extends JFrame {
         googleMap.setIcon(googleAPI.getMap(location));
         googleAPI.fileDelete(location);
 
-        // 이미지 크기에 맞게 공사 위치 표시 영역 크기 변경
         constructionMap.setBounds(0, 0, googleMap.getIcon().getIconWidth(), googleMap.getIcon().getIconHeight());
 
         repositionButton();
-
-        // 공사 위치 정보 API 새로 불러오기
         constructionMap.fetchDataFromAPI();
 
         pack();

@@ -72,7 +72,7 @@ public class ConstructionMap extends JPanel {
 
         for (Construction c : constructions) {
             // 반투명 소음 범위 원
-            g.setColor(new Color(0, 255, 0, 60));
+            g.setColor(new Color(0, 255, 0, 70));
             g.fillOval(c.x - 30, c.y - 30, 60, 60);
 
             // 중심 마커
