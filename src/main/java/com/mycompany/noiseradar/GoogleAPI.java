@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.noiseradar;
 
 import java.io.File;
@@ -12,17 +8,15 @@ import java.net.URL;
 import java.net.URLEncoder;
 import javax.swing.ImageIcon;
 
-/**
- *
- * @author heosumin518
- */
 public class GoogleAPI {
     public void downloadMap(String location, int zoom) {
         try {
             String imageURL = "https://maps.googleapis.com/maps/api/staticmap?center="
                     + URLEncoder.encode(location, "UTF-8")
                     + "&key=AIzaSyB62YTIt4eKHYlVrf9mjioCksFADR_9CQg"
-                    + "&zoom=" + zoom + "&size=800x450&scale=2";
+                    + "&zoom=" + zoom 
+                    + "&size=800x450"   // 16:9 비율 크기 설정
+                    + "&scale=2";
             
             URL url = new URL(imageURL);
             InputStream is = url.openStream();
@@ -39,13 +33,12 @@ public class GoogleAPI {
             e.printStackTrace();
         }
     }
+    
     public ImageIcon getMap(String location) {
         ImageIcon icon = new ImageIcon(location);
-        int w = icon.getIconWidth();
-        int h = icon.getIconHeight();
-        
-        int newW = 1600;
-        int newH = (int) ((double) h / w * newW);
+
+        int newW = 800;             // 가로 고정 크기
+        int newH = newW * 9 / 16;   // 세로를 16:9 비율로 고정
         
         return new ImageIcon(icon.getImage().getScaledInstance(newW, newH, java.awt.Image.SCALE_SMOOTH));
     }

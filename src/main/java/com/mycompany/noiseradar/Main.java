@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class Main extends JFrame {
+
     private JTextField textField = new JTextField(30);
     private JPanel panel = new JPanel();
     private JButton button = new JButton("search");
@@ -37,6 +38,9 @@ public class Main extends JFrame {
 
         // 🟡 로컬 상대 경로로 이미지 불러오기
         ImageIcon coneIcon = new ImageIcon("src/main/java/com/mycompany/noiseradar/cone_button.png");
+        Image originalImage = coneIcon.getImage();
+        Image resizedImage = originalImage.getScaledInstance(120, 120, Image.SCALE_SMOOTH);
+        coneIcon = new ImageIcon(resizedImage);
         coneButton = new JButton(coneIcon);
         coneButton.setContentAreaFilled(false);
         coneButton.setBorderPainted(false);
@@ -84,8 +88,8 @@ public class Main extends JFrame {
 
     private void repositionButton() {
         int margin = 10;
-        int x = googleMap.getWidth() - coneButton.getWidth() - margin;
-        int y = googleMap.getHeight() - coneButton.getHeight() - margin - 50;
+        int x = googleMap.getWidth() - coneButton.getWidth() - margin - 20;
+        int y = googleMap.getHeight() - coneButton.getHeight() - margin - 20;
         coneButton.setLocation(x, y);
     }
 
@@ -103,15 +107,28 @@ public class Main extends JFrame {
     }
 
     public class Event implements MouseListener {
+
         @Override
         public void mouseClicked(MouseEvent e) {
             setMap(textField.getText());
             googleMap.setFocusable(true);
             googleMap.requestFocusInWindow();
         }
-        @Override public void mousePressed(MouseEvent e) {}
-        @Override public void mouseReleased(MouseEvent e) {}
-        @Override public void mouseEntered(MouseEvent e) {}
-        @Override public void mouseExited(MouseEvent e) {}
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+        }
     }
 }
