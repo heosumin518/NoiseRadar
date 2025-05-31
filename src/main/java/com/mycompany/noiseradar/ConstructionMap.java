@@ -170,6 +170,8 @@ public class ConstructionMap extends JPanel {
             else if (item.has("marker_y")) y = Integer.parseInt(item.get("marker_y").toString());
         } catch (NumberFormatException ignored) {}
 
+        
+        
         constructions.add(new Construction(name, contractor, location, startDateStr, endDateStr, x, y));
     }
 
