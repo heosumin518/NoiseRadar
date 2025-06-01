@@ -1,10 +1,5 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.noiseradar;
 
-import java.awt.Point;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -18,17 +13,15 @@ import javax.swing.ImageIcon;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-/**
- *      
- * @author heosumin518
- */
 public class GoogleAPI {
     public void downloadMap(String location, int zoom) {
         try {
             String imageURL = "https://maps.googleapis.com/maps/api/staticmap?center="
                     + URLEncoder.encode(location, "UTF-8")
                     + "&key=AIzaSyB62YTIt4eKHYlVrf9mjioCksFADR_9CQg"
-                    + "&zoom=" + zoom + "&size=800x450&scale=2";
+                    + "&zoom=" + zoom 
+                    + "&size=800x450"   // 16:9 비율 크기 설정
+                    + "&scale=2";
             
             URL url = new URL(imageURL);
             InputStream is = url.openStream();
@@ -78,11 +71,9 @@ public class GoogleAPI {
     
     public ImageIcon getMap(String location) {
         ImageIcon icon = new ImageIcon(location);
-        int w = icon.getIconWidth();
-        int h = icon.getIconHeight();
-        
-        int newW = 800;
-        int newH = (int) ((double) h / w * newW);
+
+        int newW = 800;             // 가로 고정 크기
+        int newH = newW * 9 / 16;   // 세로를 16:9 비율로 고정
         
         return new ImageIcon(icon.getImage().getScaledInstance(newW, newH, java.awt.Image.SCALE_SMOOTH));
     }
@@ -119,59 +110,5 @@ public class GoogleAPI {
             e.printStackTrace();
         }
         return null;
-    }
-    
-    public Point getPixelPositionInMap(String mapAddress, double targetLat, double targetLng, int zoom, int width, int height) {
-        try {
-            String geocodeUrl = "https://maps.googleapis.com/maps/api/geocode/json?address="
-                    + URLEncoder.encode(mapAddress, "UTF-8")
-                    + "&key=AIzaSyB62YTIt4eKHYlVrf9mjioCksFADR_9CQg";
-
-            URL url = new URL(geocodeUrl);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-
-            Scanner sc = new Scanner(conn.getInputStream(), StandardCharsets.UTF_8.name());
-            StringBuilder sb = new StringBuilder();
-            while (sc.hasNext()) {
-                sb.append(sc.nextLine());
-            }
-            sc.close();
-
-            JSONObject obj = new JSONObject(sb.toString());
-            JSONObject location = obj.getJSONArray("results")
-                    .getJSONObject(0)
-                    .getJSONObject("geometry")
-                    .getJSONObject("location");
-
-            double centerLat = location.getDouble("lat");
-            double centerLng = location.getDouble("lng");
-
-            // Mercator projection 기반 픽셀 계산
-            double scale = Math.pow(2, zoom);
-            double tileSize = 256;
-            double worldSize = tileSize * scale;
-
-            // 대상 좌표
-            double x = (targetLng + 180.0) / 360.0 * worldSize;
-            double siny = Math.sin(Math.toRadians(targetLat));
-            siny = Math.min(Math.max(siny, -0.9999), 0.9999);
-            double y = (0.5 - Math.log((1 + siny) / (1 - siny)) / (4 * Math.PI)) * worldSize;
-
-            // 중심 좌표
-            double centerX = (centerLng + 180.0) / 360.0 * worldSize;
-            double centerSiny = Math.sin(Math.toRadians(centerLat));
-            centerSiny = Math.min(Math.max(centerSiny, -0.9999), 0.9999);
-            double centerY = (0.5 - Math.log((1 + centerSiny) / (1 - centerSiny)) / (4 * Math.PI)) * worldSize;
-
-            // 상대 좌표 계산
-            int pixelX = (int) Math.round(width / 2 + (x - centerX));
-            int pixelY = (int) Math.round(height / 2 + (y - centerY));
-
-            return new Point(pixelX, pixelY);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 }
