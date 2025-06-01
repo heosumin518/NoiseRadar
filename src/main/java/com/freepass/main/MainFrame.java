@@ -1,23 +1,18 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.freepass.main;
 
-import java.awt.BorderLayout;
-import javax.swing.JFrame;
+import com.mycompany.noiseradar.Main;
+import javax.swing.*;
+import java.awt.*;
 
-
-/**
- * 메인 프레임
- * 어플리케이션의 여러 화면을 관리한다. 즉, 패널들을 관리한다.
- * @author heosumin518
- */
 public class MainFrame extends JFrame {
     public static final int W_FRAME = 800;
     public static final int H_FRAME = 600;
 
-    private MainScreen mainScreen;
+    private final CardLayout cardLayout = new CardLayout();
+    private final JPanel cardPanel = new JPanel(cardLayout);
+
+    private final MainScreen mainScreen;
+    private final Main mapPanel;
 
     public MainFrame() {
         super("Noise Radar");
@@ -25,11 +20,19 @@ public class MainFrame extends JFrame {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
-        setLayout(new BorderLayout());
-        
-        mainScreen = new MainScreen();
-        setContentPane(mainScreen);
-        
+
+        mainScreen = new MainScreen(this);   // this 전달
+        mapPanel = new Main();
+
+        cardPanel.add(mainScreen, "MAIN_SCREEN");
+        cardPanel.add(mapPanel, "MAP_SCREEN");
+
+        add(cardPanel);
         setVisible(true);
+    }
+
+    public void showMapScreen(String address) {
+        mapPanel.setMap(address);         // 지도 갱신
+        cardLayout.show(cardPanel, "MAP_SCREEN");  // 화면 전환
     }
 }
