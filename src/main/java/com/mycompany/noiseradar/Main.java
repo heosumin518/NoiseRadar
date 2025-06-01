@@ -3,6 +3,7 @@ package com.mycompany.noiseradar;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 
 public class Main extends JFrame {
     private final JTextField textField = new JTextField(30);
@@ -13,6 +14,8 @@ public class Main extends JFrame {
     private final ConstructionMap constructionMap = new ConstructionMap();
     private final JButton coneButton;
     private int zoomLevel = 11;
+    
+    private final java.util.List<JLabel> mapMarkers = new ArrayList<>();
 
     public Main() {
         setTitle("Google Maps");
@@ -69,7 +72,7 @@ public class Main extends JFrame {
 
         // 기본 지도 로딩
         SwingUtilities.invokeLater(this::repositionButton);
-        setMap("Busan");
+        setMap("부산시민공원");
 
         pack();
         setVisible(true);
@@ -93,12 +96,11 @@ public class Main extends JFrame {
     }
 
     public void setMap(String location) {
-        /*
         googleAPI.downloadMap(location, zoomLevel);
         googleMap.setIcon(googleAPI.getMap(location));
         googleAPI.fileDelete(location);
-        */
         
+        /*
         // 좌표 기반으로 지도 다운로드 및 표시 방법1
         String address = googleAPI.reverseGeocode(35.0912398946, 129.0678888023);
         if (address != null) {
@@ -106,7 +108,29 @@ public class Main extends JFrame {
             googleMap.setIcon(googleAPI.getMap(address));
             googleAPI.fileDelete(address);
         }
+        */
         
+        int iconHeight = googleMap.getIcon().getIconHeight();
+        int labelHeight = googleMap.getHeight();
+        int verticalOffset = (labelHeight - iconHeight) / 2;
+        Point markerPos = googleAPI.getPixelPositionInMap(
+                location, 35.171899, 129.062228, zoomLevel, googleMap.getIcon().getIconWidth(), iconHeight
+        );
+        for (JLabel marker : mapMarkers) {
+            googleMap.remove(marker);
+        }
+        mapMarkers.clear();
+        if (markerPos != null) {
+            JLabel marker = new JLabel("📍");
+            
+            int adjustedY = markerPos.y - verticalOffset;
+            
+            marker.setBounds(markerPos.x, markerPos.y - topPanel.getHeight(), 16, 16);
+            googleMap.add(marker);
+            mapMarkers.add(marker);
+            googleMap.repaint();
+        }
+                
         // 좌표 기반으로 지도 다운로드 및 표시 방법2
         /*
         googleAPI.downloadMap(35.0912398946, 129.0678888023, zoomLevel);
