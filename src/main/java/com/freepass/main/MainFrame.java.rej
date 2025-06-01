@@ -1,0 +1,26 @@
+diff a/src/main/java/com/freepass/main/MainFrame.java b/src/main/java/com/freepass/main/MainFrame.java	(rejected hunks)
+@@ -25,19 +25,11 @@
+         setLocationRelativeTo(null);
+         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+         setResizable(false);
+-
+-        mainScreen = new MainScreen(this);   // this 전달
+-        mapPanel = new Main();
+-
+-        cardPanel.add(mainScreen, "MAIN_SCREEN");
+-        cardPanel.add(mapPanel, "MAP_SCREEN");
+-
+-        add(cardPanel);
++        setLayout(new BorderLayout());
++        
++        mainScreen = new MainScreen();
++        setContentPane(mainScreen);
++        
+         setVisible(true);
+     }
+-
+-    public void showMapScreen(String address) {
+-        mapPanel.setMap(address);         // 지도 갱신
+-        cardLayout.show(cardPanel, "MAP_SCREEN");  // 화면 전환
+-    }
+ }

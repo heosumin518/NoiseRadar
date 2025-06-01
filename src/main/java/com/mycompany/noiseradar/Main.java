@@ -1,13 +1,12 @@
 package com.mycompany.noiseradar;
 
+import com.freepass.main.ConstructionMap;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 
-public class Main extends JFrame {
-
-    private JPanel panel = new JPanel();
-
+public class Main extends JPanel {
     private final JTextField textField = new JTextField(30);
     private final JPanel topPanel = new JPanel();
     private final JButton searchButton = new JButton("search");
@@ -15,14 +14,12 @@ public class Main extends JFrame {
     private final JLabel googleMap = new JLabel();
     private final ConstructionMap constructionMap = new ConstructionMap();
     private final JButton coneButton;
-
     private int zoomLevel = 11;
 
+    private final java.util.List<JLabel> mapMarkers = new ArrayList<>();
+
     public Main() {
-        setTitle("Google Maps");
         setLayout(new BorderLayout());
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setResizable(false);
 
         // 상단 검색 패널 설정
         topPanel.add(textField);
@@ -39,14 +36,12 @@ public class Main extends JFrame {
 
         // 콘 아이콘 버튼 설정
         ImageIcon coneIcon = new ImageIcon("src/main/java/com/mycompany/noiseradar/cone_button.png");
-        Image originalImage = coneIcon.getImage();
-        Image resizedImage = originalImage.getScaledInstance(120, 120, Image.SCALE_SMOOTH);
-        coneIcon = new ImageIcon(resizedImage);
-        coneButton = new JButton(coneIcon);
+        Image resizedImage = coneIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
+        coneButton = new JButton(new ImageIcon(resizedImage));
         coneButton.setContentAreaFilled(false);
         coneButton.setBorderPainted(false);
         coneButton.setFocusPainted(false);
-        coneButton.setSize(coneIcon.getIconWidth(), coneIcon.getIconHeight());
+        coneButton.setSize(60, 60);
         coneButton.addActionListener(e -> toggleConstructionMap());
         googleMap.add(coneButton);
 
@@ -59,10 +54,6 @@ public class Main extends JFrame {
             }
         });
 
-        SwingUtilities.invokeLater(this::repositionButton);
-
-        add(BorderLayout.SOUTH, googleMap);
-        
         // 줌 기능 처리
         googleMap.addMouseWheelListener(e -> {
             int notches = e.getWheelRotation();
@@ -72,87 +63,59 @@ public class Main extends JFrame {
             }
         });
 
-        add(googleMap, BorderLayout.SOUTH);
-
-        // 기본 지도 로딩
+        // 패널 정리 및 기본 설정
+        add(googleMap, BorderLayout.CENTER);
         SwingUtilities.invokeLater(this::repositionButton);
-        setMap("Busan");
-
-        pack();
-        setVisible(true);
+        setMap("부산시민공원");
     }
-    
+
     private void performSearch() {
         setMap(textField.getText());
         googleMap.setFocusable(true);
         googleMap.requestFocusInWindow();
     }
-    
+
     private void toggleConstructionMap() {
         constructionMap.setVisible(!constructionMap.isVisible());
     }
 
     private void repositionButton() {
         int margin = 10;
-        int x = googleMap.getWidth() - coneButton.getWidth() - margin - 20;
+        int x = googleMap.getWidth() - coneButton.getWidth() - margin;
         int y = googleMap.getHeight() - coneButton.getHeight() - margin - 20;
         coneButton.setLocation(x, y);
     }
 
     public void setMap(String location) {
-        /*
         googleAPI.downloadMap(location, zoomLevel);
         googleMap.setIcon(googleAPI.getMap(location));
         googleAPI.fileDelete(location);
-        */
-        
-        // 좌표 기반으로 지도 다운로드 및 표시 방법1
-        String address = googleAPI.reverseGeocode(35.0912398946, 129.0678888023);
-        if (address != null) {
-            googleAPI.downloadMap(address, zoomLevel);
-            googleMap.setIcon(googleAPI.getMap(address));
-            googleAPI.fileDelete(address);
+
+        // 마커 제거
+        for (JLabel marker : mapMarkers) {
+            googleMap.remove(marker);
         }
-        
-        // 좌표 기반으로 지도 다운로드 및 표시 방법2
-        /*
-        googleAPI.downloadMap(35.0912398946, 129.0678888023, zoomLevel);
-        googleMap.setIcon(googleAPI.getMap("temp_map.png"));
-        googleAPI.fileDelete("temp_map.png");
-        */
+        mapMarkers.clear();
+
+        // 예시 마커
+        Point markerPos = googleAPI.getPixelPositionInMap(
+                location, 35.171899, 129.062228, zoomLevel,
+                googleMap.getIcon().getIconWidth(), googleMap.getIcon().getIconHeight()
+        );
+        if (markerPos != null) {
+            JLabel marker = new JLabel("📍");
+            marker.setBounds(markerPos.x, markerPos.y - topPanel.getHeight(), 16, 16);
+            googleMap.add(marker);
+            mapMarkers.add(marker);
+            googleMap.repaint();
+        }
 
         constructionMap.setBounds(0, 0,
-            googleMap.getIcon().getIconWidth(),
-            googleMap.getIcon().getIconHeight());
-        
+                googleMap.getIcon().getIconWidth(),
+                googleMap.getIcon().getIconHeight());
+
         repositionButton();
+
         constructionMap.fetchDataFromAPI();
-        pack();
-    }
-
-    public class Event implements MouseListener {
-
-        @Override
-        public void mouseClicked(MouseEvent e) {
-            setMap(textField.getText());
-            googleMap.setFocusable(true);
-            googleMap.requestFocusInWindow();
-        }
-
-        @Override
-        public void mousePressed(MouseEvent e) {
-        }
-
-        @Override
-        public void mouseReleased(MouseEvent e) {
-        }
-
-        @Override
-        public void mouseEntered(MouseEvent e) {
-        }
-
-        @Override
-        public void mouseExited(MouseEvent e) {
-        }
     }
 }
