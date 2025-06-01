@@ -1,6 +1,6 @@
-package com.mycompany.noiseradar;
+package com.freepass.controller;
 
-import com.freepass.controller.Construction;
+import com.freepass.dto.ConstructionDTO;
 import org.json.*;
 import java.io.*;
 import java.net.*;
@@ -46,16 +46,16 @@ public class ConstructionAPI {
         return currentIndex < itemArray.length();
     }
 
-    public Construction getNext() {
+    public ConstructionDTO getNext() {
         while (hasNext()) {
             JSONObject item = itemArray.getJSONObject(currentIndex++);
-            Construction c = parseConstruction(item);
+            ConstructionDTO c = parseConstruction(item);
             if (c != null) return c;
         }
         return null;
     }
 
-    private Construction parseConstruction(JSONObject item) {
+    private ConstructionDTO parseConstruction(JSONObject item) {
         String name = item.optString("cnstrcNm", "공사명 없음");
         String contractor = item.optString("cnstrtr", "시공사 없음");
         String location = item.optString("cnstrcLc", "위치 없음");
@@ -84,6 +84,6 @@ public class ConstructionAPI {
             else if (item.has("marker_y")) y = Integer.parseInt(item.get("marker_y").toString());
         } catch (NumberFormatException ignored) {}
 
-        return new Construction(name, contractor, location, startDateStr, endDateStr, x, y);
+        return new ConstructionDTO(name, contractor, location, startDateStr, endDateStr, x, y);
     }
 }

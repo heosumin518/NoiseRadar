@@ -1,6 +1,6 @@
 package com.mycompany.noiseradar;
 
-import com.freepass.main.ConstructionMap;
+import com.freepass.view.ConstructionMap;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;

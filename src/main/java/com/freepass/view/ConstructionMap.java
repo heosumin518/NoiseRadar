@@ -1,7 +1,7 @@
-package com.freepass.main;
+package com.freepass.view;
 
-import com.freepass.controller.Construction;
-import com.mycompany.noiseradar.ConstructionAPI;
+import com.freepass.dto.ConstructionDTO;
+import com.freepass.controller.ConstructionAPI;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,8 +9,8 @@ import java.awt.event.*;
 import java.util.*;
 
 public class ConstructionMap extends JPanel {
-    private final java.util.List<Construction> constructions = new ArrayList<>();
-    private Construction lastHoveredConstruction = null;
+    private final java.util.List<ConstructionDTO> constructions = new ArrayList<>();
+    private ConstructionDTO lastHoveredConstruction = null;
     private JWindow popupWindow = null;
 
     public ConstructionMap() {
@@ -21,9 +21,9 @@ public class ConstructionMap extends JPanel {
             @Override
             public void mouseMoved(MouseEvent e) {
                 boolean hovering = false;
-                for (Construction c : constructions) {
-                    if (e.getX() >= c.x - 10 && e.getX() <= c.x + 10 &&
-                        e.getY() >= c.y - 10 && e.getY() <= c.y + 10) {
+                for (ConstructionDTO c : constructions) {
+                    if (e.getX() >= c.getX() - 10 && e.getX() <= c.getX() + 10 &&
+                        e.getY() >= c.getY() - 10 && e.getY() <= c.getY() + 10) {
                         if (lastHoveredConstruction != c) {
                             lastHoveredConstruction = c;
                             showPopup(e, c);
@@ -45,19 +45,19 @@ public class ConstructionMap extends JPanel {
         try {
             ConstructionAPI api = new ConstructionAPI();
             while (api.hasNext()) {
-                Construction c = api.getNext();
+                ConstructionDTO c = api.getNext();
                 if (c != null) {
                     constructions.add(c);
                 }
             }
-            repaint(); // 새로운 데이터를 반영하여 다시 그림
+            repaint();
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "API 데이터를 불러오는 중 오류가 발생했습니다.", "에러", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    public void addConstruction(Construction c) {
+    public void addConstruction(ConstructionDTO c) {
         constructions.add(c);
         repaint();
     }
@@ -65,19 +65,22 @@ public class ConstructionMap extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        for (Construction c : constructions) {
+        for (ConstructionDTO c : constructions) {
+            int x = c.getX();
+            int y = c.getY();
+
             g.setColor(new Color(0, 255, 0, 70));
-            g.fillOval(c.x - 30, c.y - 30, 60, 60);
+            g.fillOval(x - 30, y - 30, 60, 60);
             g.setColor(Color.GREEN);
-            g.fillOval(c.x - 5, c.y - 5, 10, 10);
+            g.fillOval(x - 5, y - 5, 10, 10);
             g.setColor(Color.BLACK);
-            g.drawString("🚧", c.x - 8, c.y - 10);
+            g.drawString("🚧", x - 8, y - 10);
         }
     }
 
-    private void showPopup(MouseEvent e, Construction c) {
+    private void showPopup(MouseEvent e, ConstructionDTO c) {
         hidePopup();
-        JLabel label = new JLabel("<html><b>" + c.name + "</b><br>시공사: " + c.contractor + "<br>위치: " + c.location + "<br>기간: " + c.startDate + " ~ " + c.endDate + "</html>");
+        JLabel label = new JLabel("<html><b>" + c.getName() + "</b><br>시공사: " + c.getContractor() + "<br>위치: " + c.getLocation() + "<br>기간: " + c.getStartDate() + " ~ " + c.getEndDate() + "</html>");
         label.setBorder(BorderFactory.createLineBorder(Color.GRAY));
         label.setBackground(new Color(255, 255, 225));
         label.setOpaque(true);
