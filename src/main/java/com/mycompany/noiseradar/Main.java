@@ -15,6 +15,7 @@ public class Main extends JPanel {
     private final ConstructionMap constructionMap = new ConstructionMap();
     private final JButton coneButton;
     private int zoomLevel = 11;
+    private String currentLocation = "부산시민공원"; // 현재 지도 중심점 추적
 
     private final java.util.List<JLabel> mapMarkers = new ArrayList<>();
 
@@ -29,6 +30,8 @@ public class Main extends JPanel {
 
         // 지도 레이블 레이아웃 설정
         googleMap.setLayout(null);
+        // 포커스 가능하도록 설정
+        googleMap.setFocusable(true);
 
         // 공사정보 맵 설정
         constructionMap.setVisible(false);
@@ -51,6 +54,9 @@ public class Main extends JPanel {
             public void componentResized(ComponentEvent e) {
                 repositionButton();
                 constructionMap.setBounds(0, 0, googleMap.getWidth(), googleMap.getHeight());
+                // 지도 크기가 변경되면 공사 위치도 재계산
+                constructionMap.updateMapParameters(currentLocation, zoomLevel, 
+                    googleMap.getWidth(), googleMap.getHeight());
             }
         });
 
@@ -60,6 +66,16 @@ public class Main extends JPanel {
             zoomLevel = Math.max(1, Math.min(20, zoomLevel - notches));
             if (!textField.getText().isEmpty()) {
                 setMap(textField.getText());
+            } else {
+                setMap(currentLocation);
+            }
+        });
+
+        // 마우스 클릭 시 포커스 설정
+        googleMap.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                googleMap.requestFocusInWindow();
             }
         });
 
@@ -71,8 +87,10 @@ public class Main extends JPanel {
 
     private void performSearch() {
         setMap(textField.getText());
-        googleMap.setFocusable(true);
-        googleMap.requestFocusInWindow();
+        // 검색 후 지도에 포커스 설정
+        SwingUtilities.invokeLater(() -> {
+            googleMap.requestFocusInWindow();
+        });
     }
 
     private void toggleConstructionMap() {
@@ -87,6 +105,8 @@ public class Main extends JPanel {
     }
 
     public void setMap(String location) {
+        currentLocation = location; // 현재 위치 업데이트
+        
         googleAPI.downloadMap(location, zoomLevel);
         googleMap.setIcon(googleAPI.getMap(location));
         googleAPI.fileDelete(location);
@@ -110,12 +130,31 @@ public class Main extends JPanel {
             googleMap.repaint();
         }
 
+        // 공사정보 맵 크기와 매개변수 업데이트
         constructionMap.setBounds(0, 0,
                 googleMap.getIcon().getIconWidth(),
                 googleMap.getIcon().getIconHeight());
 
+        // 공사 맵에 현재 지도 정보 전달
+        constructionMap.updateMapParameters(location, zoomLevel, 
+            googleMap.getIcon().getIconWidth(), 
+            googleMap.getIcon().getIconHeight());
+
         repositionButton();
 
-        constructionMap.fetchDataFromAPI(currentMapIcon.getIconWidth(), currentMapIcon.getIconHeight());
+        // API 데이터 새로 가져오기 (위치가 정확하게 계산됨)
+        constructionMap.fetchDataFromAPI();
+        
+        // 지도 업데이트 후 포커스 설정
+        SwingUtilities.invokeLater(() -> {
+            googleMap.requestFocusInWindow();
+        });
+    }
+    
+    // 화면 전환 시 호출될 메서드 추가
+    public void onScreenShown() {
+        SwingUtilities.invokeLater(() -> {
+            googleMap.requestFocusInWindow();
+        });
     }
 }

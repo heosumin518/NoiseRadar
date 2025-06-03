@@ -12,6 +12,12 @@ public class ConstructionMap extends JPanel {
     private final java.util.List<ConstructionDTO> constructions = new ArrayList<>();
     private ConstructionDTO lastHoveredConstruction = null;
     private JWindow popupWindow = null;
+    
+    // 현재 지도 정보를 저장하는 변수들
+    private String currentMapCenter = "부산시민공원";
+    private int currentZoomLevel = 11;
+    private int currentMapWidth = 612;
+    private int currentMapHeight = 612;
 
     public ConstructionMap() {
         setOpaque(false);
@@ -22,8 +28,8 @@ public class ConstructionMap extends JPanel {
             public void mouseMoved(MouseEvent e) {
                 boolean hovering = false;
                 for (ConstructionDTO c : constructions) {
-                    if (e.getX() >= c.getX() - 10 && e.getX() <= c.getX() + 10 &&
-                        e.getY() >= c.getY() - 10 && e.getY() <= c.getY() + 10) {
+                    if (e.getX() >= c.getX() - 15 && e.getX() <= c.getX() + 15 &&
+                        e.getY() >= c.getY() - 15 && e.getY() <= c.getY() + 15) {
                         if (lastHoveredConstruction != c) {
                             lastHoveredConstruction = c;
                             showPopup(e, c);
@@ -38,22 +44,41 @@ public class ConstructionMap extends JPanel {
                 }
             }
         });
+        
+       
+    }
+    
+    /**
+     * Main 클래스에서 지도 정보가 변경될 때 호출
+     */
+    public void updateMapParameters(String mapCenter, int zoomLevel, int mapWidth, int mapHeight) {
+        this.currentMapCenter = mapCenter;
+        this.currentZoomLevel = zoomLevel;
+        this.currentMapWidth = mapWidth;
+        this.currentMapHeight = mapHeight;
+        
     }
 
-    public void fetchDataFromAPI(int iconWidth, int iconHeight) {
+    /**
+     * API에서 데이터를 가져와서 현재 지도에 맞는 위치로 표시
+     */
+    public void fetchDataFromAPI() {
         constructions.clear();
         try {
+            
             ConstructionAPI api = new ConstructionAPI();
-            while (api.hasNext()) {
-                ConstructionDTO c = api.getNext();
-                if (c != null) {
-                    constructions.add(c);
-                }
-            }
+            java.util.List<ConstructionDTO> validConstructions = api.getAllConstructionsWithPositions(
+                currentMapCenter, currentZoomLevel, currentMapWidth, currentMapHeight
+            );
+            
+            constructions.addAll(validConstructions);
+            
             repaint();
         } catch (Exception e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "API 데이터를 불러오는 중 오류가 발생했습니다.", "에러", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, 
+                "API 데이터를 불러오는 중 오류가 발생했습니다: " + e.getMessage(), 
+                "에러", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -69,10 +94,15 @@ public class ConstructionMap extends JPanel {
             int x = c.getX();
             int y = c.getY();
 
+            // 반투명 녹색 원 (공사 구역 표시)
             g.setColor(new Color(0, 255, 0, 70));
             g.fillOval(x - 30, y - 30, 60, 60);
+
+            // 녹색 점 (마커 위치 표시)
             g.setColor(Color.GREEN);
             g.fillOval(x - 5, y - 5, 10, 10);
+
+            // 공사 아이콘 (이모지)
             g.setColor(Color.BLACK);
             g.drawString("🚧", x - 8, y - 10);
         }
@@ -99,8 +129,5 @@ public class ConstructionMap extends JPanel {
             popupWindow = null;
         }
     }
-
-    void setMapImage(Image image) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+    
 }
