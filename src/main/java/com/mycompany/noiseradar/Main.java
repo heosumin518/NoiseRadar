@@ -116,6 +116,6 @@ public class Main extends JPanel {
 
         repositionButton();
 
-        constructionMap.fetchDataFromAPI();
+        constructionMap.fetchDataFromAPI(currentMapIcon.getIconWidth(), currentMapIcon.getIconHeight());
     }
 }

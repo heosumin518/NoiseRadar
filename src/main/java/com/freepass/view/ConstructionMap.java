@@ -40,7 +40,7 @@ public class ConstructionMap extends JPanel {
         });
     }
 
-    public void fetchDataFromAPI() {
+    public void fetchDataFromAPI(int iconWidth, int iconHeight) {
         constructions.clear();
         try {
             ConstructionAPI api = new ConstructionAPI();
@@ -98,5 +98,9 @@ public class ConstructionMap extends JPanel {
             popupWindow.dispose();
             popupWindow = null;
         }
+    }
+
+    void setMapImage(Image image) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }
