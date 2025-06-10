@@ -127,25 +127,6 @@ public class Main extends JPanel {
         googleMap.setIcon(googleAPI.getMap(location));
         googleAPI.fileDelete(location);
 
-        // 마커 제거
-        for (JLabel marker : mapMarkers) {
-            googleMap.remove(marker);
-        }
-        mapMarkers.clear();
-
-        // 예시 마커
-        Point markerPos = googleAPI.getPixelPositionInMap(
-                location, 35.171899, 129.062228, zoomLevel,
-                googleMap.getIcon().getIconWidth(), googleMap.getIcon().getIconHeight()
-        );
-        if (markerPos != null) {
-            JLabel marker = new JLabel("📍");
-            marker.setBounds(markerPos.x, markerPos.y - topPanel.getHeight(), 16, 16);
-            googleMap.add(marker);
-            mapMarkers.add(marker);
-            googleMap.repaint();
-        }
-
         // 공사정보 맵 크기와 매개변수 업데이트
         constructionMap.setBounds(0, 0,
                 googleMap.getIcon().getIconWidth(),
