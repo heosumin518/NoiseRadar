@@ -1,7 +1,6 @@
 package com.freepass.main;
 
 import com.freepass.main.MainFrame;
-import com.mycompany.noiseradar.Main;
 
 import javax.swing.*;
 

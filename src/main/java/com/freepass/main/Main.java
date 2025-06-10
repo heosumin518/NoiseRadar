@@ -1,6 +1,7 @@
-package com.mycompany.noiseradar;
+package com.freepass.main;
 
 import com.freepass.view.ConstructionMap;
+import com.freepass.controller.GoogleAPI;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -82,6 +83,7 @@ public class Main extends JPanel {
         // 패널 정리 및 기본 설정
         add(googleMap, BorderLayout.CENTER);
         SwingUtilities.invokeLater(this::repositionButton);
+        
         setMap("부산시민공원");
     }
 
@@ -105,6 +107,7 @@ public class Main extends JPanel {
     }
 
     public void setMap(String location) {
+        System.out.println("setMap");
         currentLocation = location; // 현재 위치 업데이트
         
         googleAPI.downloadMap(location, zoomLevel);
@@ -142,9 +145,11 @@ public class Main extends JPanel {
 
         repositionButton();
 
+/*
         // API 데이터 새로 가져오기 (위치가 정확하게 계산됨)
         constructionMap.fetchDataFromAPI();
-        
+*/
+
         // 지도 업데이트 후 포커스 설정
         SwingUtilities.invokeLater(() -> {
             googleMap.requestFocusInWindow();

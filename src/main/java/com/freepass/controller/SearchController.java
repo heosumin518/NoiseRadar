@@ -5,7 +5,7 @@
 package com.freepass.controller;
 
 import com.freepass.main.MainFrame;
-import com.freepass.main.MainScreen;
+import com.freepass.view.MainScreen;
 
 /**
  *

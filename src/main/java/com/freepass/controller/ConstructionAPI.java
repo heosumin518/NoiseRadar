@@ -1,7 +1,6 @@
 package com.freepass.controller;
 
 import com.freepass.dto.ConstructionDTO;
-import com.mycompany.noiseradar.GoogleAPI;
 import org.json.*;
 import java.awt.Point;
 import java.io.*;
@@ -254,7 +253,7 @@ public class ConstructionAPI {
                     constructions.add(c);
                 } else {
                     // 위치를 찾을 수 없는 경우 로그 출력 후 스킵
-                    System.out.println("위치를 찾을 수 없어 스킵: " + c.getLocation());
+                    //System.out.println("위치를 찾을 수 없어 스킵: " + c.getLocation());
                 }
             }
         }

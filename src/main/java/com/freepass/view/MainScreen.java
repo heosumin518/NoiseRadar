@@ -1,5 +1,6 @@
-package com.freepass.main;
+package com.freepass.view;
 
+import com.freepass.main.MainFrame;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
