@@ -5,7 +5,6 @@ import com.freepass.controller.GoogleAPI;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
 
 public class Main extends JPanel {
 
@@ -18,8 +17,8 @@ public class Main extends JPanel {
     private final JButton coneButton;
     private int zoomLevel = 11;
     private String currentLocation = "부산시민공원"; // 현재 지도 중심점 추적
-
-    private final java.util.List<JLabel> mapMarkers = new ArrayList<>();
+    private final JButton zoomInButton = new JButton("+");
+    private final JButton zoomOutButton = new JButton("-");
 
     public Main() {
         setLayout(new BorderLayout());
@@ -61,24 +60,11 @@ public class Main extends JPanel {
                         googleMap.getWidth(), googleMap.getHeight());
             }
         });
-
-        // 줌 기능 처리
-        // Main.java 파일 내
-        googleMap.addMouseWheelListener(e -> {
-            int notches = e.getWheelRotation();
-            zoomLevel = Math.max(1, Math.min(20, zoomLevel - notches));
-            if (!textField.getText().isEmpty()) {
-                setMap(textField.getText());
-            } else {
-                setMap(currentLocation);
-            }
-
-            // 줌 레벨이 변경될 때 공사 위치 데이터도 새로 불러옵니다.
-            // constructionMap이 현재 표시 중일 때만 업데이트
-            if (constructionMap.isVisible()) {
-                constructionMap.fetchDataFromAPI();
-            }
-        });
+        
+        initZoomInOutButtonStyleAndEvent();
+        
+        googleMap.add(zoomInButton);
+        googleMap.add(zoomOutButton);
 
         // 마우스 클릭 시 포커스 설정
         googleMap.addMouseListener(new MouseAdapter() {
@@ -94,6 +80,20 @@ public class Main extends JPanel {
 
         setMap("부산시민공원");
     }
+    
+    private void initZoomInOutButtonStyleAndEvent() {
+        zoomInButton.setSize(50, 40);
+        zoomOutButton.setSize(50, 40);
+        
+        zoomInButton.setFocusPainted(false);
+        zoomOutButton.setFocusPainted(false);
+        
+        zoomInButton.setFont(new Font("Arial", Font.BOLD, 18));
+        zoomOutButton.setFont(new Font("Arial", Font.BOLD, 18));
+        
+        zoomInButton.addActionListener(e -> changeZoomLevel(1));
+        zoomOutButton.addActionListener(e -> changeZoomLevel(-1));
+    }
 
     private void performSearch() {
         setMap(textField.getText());
@@ -107,7 +107,7 @@ public class Main extends JPanel {
     private void toggleConstructionMap() {
         constructionMap.setVisible(!constructionMap.isVisible());
         if (constructionMap.isVisible()) {
-            // 공사 지도가 보이게 되면 데이터를 가져옵니다.
+            // 공사 지도가 보이게 되면 데이터를 가져온다
             constructionMap.fetchDataFromAPI();
         }
     }
@@ -116,7 +116,24 @@ public class Main extends JPanel {
         int margin = 10;
         int x = googleMap.getWidth() - coneButton.getWidth() - margin;
         int y = googleMap.getHeight() - coneButton.getHeight() - margin - 20;
+
         coneButton.setLocation(x, y);
+        zoomInButton.setLocation(x, y - 100);
+        zoomOutButton.setLocation(x, y - 50);
+    }
+    
+    private void changeZoomLevel(int delta) {
+        zoomLevel = Math.max(1, Math.min(20, zoomLevel + delta));
+        if (!textField.getText().isEmpty()) {
+            setMap(textField.getText());
+        } else {
+            setMap(currentLocation);
+        }
+        /*
+        if (constructionMap.isVisible()) {
+            constructionMap.fetchDataFromAPI();
+        }
+        */
     }
 
     public void setMap(String location) {
