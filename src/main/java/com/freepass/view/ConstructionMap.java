@@ -6,7 +6,6 @@ import com.freepass.controller.ConstructionAPI;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.IOException;
 import java.util.*;
 import java.util.List;
 import org.json.JSONException;

@@ -1,7 +1,5 @@
 package com.freepass.main;
 
-import com.freepass.main.MainFrame;
-
 import javax.swing.*;
 
 public class EntryPoint {
