@@ -23,11 +23,13 @@ import org.json.JSONObject;
  * @author heosumin518
  */
 public class GoogleAPI {
+    private final String API_KEY = "AIzaSyB62YTIt4eKHYlVrf9mjioCksFADR_9CQg";
+    
     public void downloadMap(String location, int zoom) {
         try {
             String imageURL = "https://maps.googleapis.com/maps/api/staticmap?center="
                     + URLEncoder.encode(location, "UTF-8")
-                    + "&key=AIzaSyB62YTIt4eKHYlVrf9mjioCksFADR_9CQg"
+                    + "&key=" + API_KEY
                     + "&zoom=" + zoom + "&size=800x450&scale=2";
             
             URL url = new URL(imageURL);
@@ -55,7 +57,7 @@ public class GoogleAPI {
                     + "&zoom=" + zoom
                     + "&size=800x450&scale=2"
                     + "&markers=" + URLEncoder.encode(marker, "UTF-8")
-                    + "&key=AIzaSyB62YTIt4eKHYlVrf9mjioCksFADR_9CQg";
+                    + "&key=" + API_KEY;
 
             System.out.println("STATIC MAP URL: " + imageURL);
             
@@ -97,7 +99,7 @@ public class GoogleAPI {
         try {
             String urlStr = "https://maps.googleapis.com/maps/api/geocode/json?latlng="
                     + lat + "," + lng
-                    + "&key=AIzaSyB62YTIt4eKHYlVrf9mjioCksFADR_9CQg";
+                    + "&key=" + API_KEY;
             
             URL url = new URL(urlStr);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -125,7 +127,7 @@ public class GoogleAPI {
         try {
             String geocodeUrl = "https://maps.googleapis.com/maps/api/geocode/json?address="
                     + URLEncoder.encode(mapAddress, "UTF-8")
-                    + "&key=AIzaSyB62YTIt4eKHYlVrf9mjioCksFADR_9CQg";
+                    + "&key=" + API_KEY;
 
             URL url = new URL(geocodeUrl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
