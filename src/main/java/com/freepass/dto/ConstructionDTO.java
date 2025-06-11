@@ -11,14 +11,14 @@ public class ConstructionDTO {
     private double latitude; // GPS 위도
     private double longitude; // GPS 경도
 
-    public ConstructionDTO(String name, String contractor, String location, String startDate, String endDate, int x, int y) {
+    public ConstructionDTO(String name, String contractor, String location, String startDate, String endDate, double x, double y) {
         this.name = name;
         this.contractor = contractor;
         this.location = location;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.x = x;
-        this.y = y;
+        this.x = (int) x;
+        this.y = (int) y;
     }
 
     // 복사 생성자 (안전한 객체 복사를 위해)

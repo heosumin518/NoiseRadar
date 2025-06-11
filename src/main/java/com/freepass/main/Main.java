@@ -16,7 +16,7 @@ public class Main extends JPanel {
     private final ConstructionMap constructionMap = new ConstructionMap();
     private final JButton coneButton;
     private int zoomLevel = 11;
-    private String currentLocation = "부산시민공원"; // 현재 지도 중심점 추적
+    private String currentLocation = "부산시민공원";
     private final JButton zoomInButton = new JButton("+");
     private final JButton zoomOutButton = new JButton("-");
 
@@ -31,7 +31,6 @@ public class Main extends JPanel {
 
         // 지도 레이블 레이아웃 설정
         googleMap.setLayout(null);
-        // 포커스 가능하도록 설정
         googleMap.setFocusable(true);
 
         // 공사정보 맵 설정
@@ -55,18 +54,16 @@ public class Main extends JPanel {
             public void componentResized(ComponentEvent e) {
                 repositionButton();
                 constructionMap.setBounds(0, 0, googleMap.getWidth(), googleMap.getHeight());
-                // 지도 크기가 변경되면 공사 위치도 재계산
                 constructionMap.updateMapParameters(currentLocation, zoomLevel,
                         googleMap.getWidth(), googleMap.getHeight());
             }
         });
-        
+
         initZoomInOutButtonStyleAndEvent();
-        
+
         googleMap.add(zoomInButton);
         googleMap.add(zoomOutButton);
 
-        // 마우스 클릭 시 포커스 설정
         googleMap.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -74,40 +71,52 @@ public class Main extends JPanel {
             }
         });
 
-        // 패널 정리 및 기본 설정
         add(googleMap, BorderLayout.CENTER);
-        SwingUtilities.invokeLater(this::repositionButton);
+
+        // Z-Order 및 위치 설정
+        SwingUtilities.invokeLater(() -> {
+            repositionButton();
+
+            googleMap.setComponentZOrder(coneButton, 0);
+            googleMap.setComponentZOrder(zoomInButton, 0);
+            googleMap.setComponentZOrder(zoomOutButton, 0);
+            googleMap.setComponentZOrder(constructionMap, 2);
+        });
 
         setMap("부산시민공원");
     }
-    
+
     private void initZoomInOutButtonStyleAndEvent() {
         zoomInButton.setSize(50, 40);
         zoomOutButton.setSize(50, 40);
-        
+
         zoomInButton.setFocusPainted(false);
         zoomOutButton.setFocusPainted(false);
-        
+
         zoomInButton.setFont(new Font("Arial", Font.BOLD, 18));
         zoomOutButton.setFont(new Font("Arial", Font.BOLD, 18));
-        
-        zoomInButton.addActionListener(e -> changeZoomLevel(1));
-        zoomOutButton.addActionListener(e -> changeZoomLevel(-1));
+
+        zoomInButton.addActionListener(e -> {
+            System.out.println("zoomIn clicked");
+            changeZoomLevel(1);
+        });
+
+        zoomOutButton.addActionListener(e -> {
+            System.out.println("zoomOut clicked");
+            changeZoomLevel(-1);
+        });
     }
 
     private void performSearch() {
         setMap(textField.getText());
-        // 검색 후 지도에 포커스 설정
         SwingUtilities.invokeLater(() -> {
             googleMap.requestFocusInWindow();
         });
     }
 
-    // Main.java 파일 내
     private void toggleConstructionMap() {
         constructionMap.setVisible(!constructionMap.isVisible());
         if (constructionMap.isVisible()) {
-            // 공사 지도가 보이게 되면 데이터를 가져온다
             constructionMap.fetchDataFromAPI();
         }
     }
@@ -121,7 +130,7 @@ public class Main extends JPanel {
         zoomInButton.setLocation(x, y - 100);
         zoomOutButton.setLocation(x, y - 50);
     }
-    
+
     private void changeZoomLevel(int delta) {
         zoomLevel = Math.max(1, Math.min(20, zoomLevel + delta));
         if (!textField.getText().isEmpty()) {
@@ -129,39 +138,33 @@ public class Main extends JPanel {
         } else {
             setMap(currentLocation);
         }
-        /*
-        if (constructionMap.isVisible()) {
-            constructionMap.fetchDataFromAPI();
-        }
-        */
     }
 
     public void setMap(String location) {
-        currentLocation = location; // 현재 위치 업데이트
+        currentLocation = location;
 
         googleAPI.downloadMap(location, zoomLevel);
         googleMap.setIcon(googleAPI.getMap(location));
         googleAPI.fileDelete(location);
 
-        // 공사정보 맵 크기와 매개변수 업데이트
         constructionMap.setBounds(0, 0,
                 googleMap.getIcon().getIconWidth(),
                 googleMap.getIcon().getIconHeight());
 
-        // 공사 맵에 현재 지도 정보 전달
         constructionMap.updateMapParameters(location, zoomLevel,
                 googleMap.getIcon().getIconWidth(),
                 googleMap.getIcon().getIconHeight());
 
+        // 공사 데이터 항상 새로 계산 (가시성 여부와 무관하게)
+        constructionMap.fetchDataFromAPI();
+
         repositionButton();
 
-        // 지도 업데이트 후 포커스 설정
         SwingUtilities.invokeLater(() -> {
             googleMap.requestFocusInWindow();
         });
     }
 
-    // 화면 전환 시 호출될 메서드 추가
     public void onScreenShown() {
         SwingUtilities.invokeLater(() -> {
             googleMap.requestFocusInWindow();

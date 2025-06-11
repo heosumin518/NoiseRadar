@@ -29,12 +29,6 @@ public class ConstructionMap extends JPanel {
 
         try {
             this.constructionAPI = new ConstructionAPI(); // API 초기화 시 모든 데이터 캐싱
-        } catch (IOException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this,
-                "건설 API 초기화 중 오류가 발생했습니다: " + e.getMessage() + "\n일부 기능이 제한될 수 있습니다.",
-                "API 초기화 오류", JOptionPane.ERROR_MESSAGE);
-            throw new RuntimeException("Construction API 초기화 실패", e);
         } catch (JSONException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this,
